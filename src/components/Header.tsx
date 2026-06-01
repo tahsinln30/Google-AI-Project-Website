@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Linkedin, Github, Menu, X, ArrowUpRight, ShieldCheck, Cpu } from "lucide-react";
 import { ABOUT_ME } from "../data";
@@ -21,10 +21,15 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
+  const isManualScroll = useRef(false);
+  const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
+
   // Monitor scrolling to highlight active menu item and trigger navbar background blur
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
+
+      if (isManualScroll.current) return;
 
       // Check if near the very bottom of the page
       const isAtBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 60;
@@ -53,25 +58,34 @@ export default function Header() {
     };
 
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+    };
   }, []);
 
   const scrollToSection = (id: string) => {
     setMobileMenuOpen(false);
+    
+    isManualScroll.current = true;
+    if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+    setActiveSection(id);
+
     const element = document.getElementById(id);
     if (element) {
       const offset = 80; // height of floating header
-      const bodyRect = document.body.getBoundingClientRect().top;
-      const elementRect = element.getBoundingClientRect().top;
-      const elementPosition = elementRect - bodyRect;
+      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
       const offsetPosition = elementPosition - offset;
 
       window.scrollTo({
         top: offsetPosition,
         behavior: "smooth",
       });
-      setActiveSection(id);
     }
+
+    scrollTimeout.current = setTimeout(() => {
+      isManualScroll.current = false;
+    }, 850);
   };
 
   return (
@@ -150,20 +164,20 @@ export default function Header() {
                 target="_blank"
                 rel="noopener noreferrer"
                 referrerPolicy="no-referrer"
-                className="text-slate-400 hover:text-indigo-400 transition-colors p-1.5 rounded-md hover:bg-slate-900"
+                className="text-slate-200 hover:text-indigo-400 transition-colors p-2 rounded-md hover:bg-slate-900"
                 title="LinkedIn Profile"
               >
-                <Linkedin className="h-4.5 w-4.5" />
+                <Linkedin className="h-5 w-5" />
               </a>
               <a
                 href={ABOUT_ME.contact.github}
                 target="_blank"
                 rel="noopener noreferrer"
                 referrerPolicy="no-referrer"
-                className="text-slate-400 hover:text-white transition-colors p-1.5 rounded-md hover:bg-slate-900"
+                className="text-slate-200 hover:text-white transition-colors p-2 rounded-md hover:bg-slate-900"
                 title="GitHub Repositories"
               >
-                <Github className="h-4.5 w-4.5" />
+                <Github className="h-5 w-5" />
               </a>
             </div>
 
@@ -174,22 +188,24 @@ export default function Header() {
                 target="_blank"
                 rel="noopener noreferrer"
                 referrerPolicy="no-referrer"
-                className="text-slate-400 hover:text-indigo-400 p-1.5 rounded-md hover:bg-slate-900"
+                className="text-slate-200 hover:text-indigo-400 p-2 rounded-md hover:bg-slate-900 transition-colors"
+                title="LinkedIn Profile"
               >
-                <Linkedin className="h-4 w-4" />
+                <Linkedin className="h-5 w-5" />
               </a>
               <a
                 href={ABOUT_ME.contact.github}
                 target="_blank"
                 rel="noopener noreferrer"
                 referrerPolicy="no-referrer"
-                className="text-slate-400 hover:text-white p-1.5 rounded-md hover:bg-slate-900"
+                className="text-slate-200 hover:text-white p-2 rounded-md hover:bg-slate-900 transition-colors"
+                title="GitHub Repositories"
               >
-                <Github className="h-4 w-4" />
+                <Github className="h-5 w-5" />
               </a>
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-slate-400 hover:text-white p-1.5 hover:bg-slate-900 rounded-md transition-colors"
+                className="text-slate-200 hover:text-white p-2 hover:bg-slate-900 rounded-md transition-colors"
               >
                 {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>

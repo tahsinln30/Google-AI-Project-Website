@@ -16,6 +16,7 @@ export default function QaPlayground() {
   const [runLogs, setRunLogs] = useState<string[]>([]);
   const [isRunningTests, setIsRunningTests] = useState(false);
   const [testSuccess, setTestSuccess] = useState<boolean | null>(null);
+  const [stepIndex, setStepIndex] = useState<number>(-1);
 
   // State for Load Testing Sim
   const [virtualUsers, setVirtualUsers] = useState<number>(500);
@@ -112,36 +113,56 @@ test('Verify subscription calendar locks after cutoff', async ({ page }) => {
     }
   };
 
+  const getLogBatch = (scriptKey: string) => {
+    if (scriptKey === "cypress-bdtickets") {
+      return [
+        `[QA ENGINE] Initializing secure Chromium instance for target: bdtickets.com.bd...`,
+        `[SYSTEM] Invoking Cypress V13 compilation headers...`,
+        `[TEST RUNNER] Launching spec script: bdtickets-payment.cy.ts`,
+        `[CHROME] Navigating to verified endpoint: https://bdtickets.com.bd/checkout?id=GP-9421`,
+        `[LOG] Element [data-qa="seat-charge"] verified as visible on checkout canvas.`,
+        `[LOG] Typing promo code 'TAHSIN_QA_PRO' into [data-qa="promo-field"] input.`,
+        `[ASSERTION] expect(discountValue).to.be.greaterThan(0); -> SUCCESS (Value: $50.00)`,
+        `[LOG] Asserting net-amount matches $450.00 -> SUCCESS`,
+        `[LOG] Simulating secure checkout gesture click on [data-qa="checkout-btn"]...`,
+        `[STAGE] Redirection successful to gateway. COMPLETE (0 exceptions).`
+      ];
+    } else {
+      return [
+        `[QA ENGINE] Initializing secure Chromium instance for target: lunchbd.com...`,
+        `[SYSTEM] Invoking Playwright Core compilation headers...`,
+        `[TEST RUNNER] Launching spec script: playwright-launcher.spec.ts`,
+        `[CHROME] Navigating to verified endpoint: https://lunchbd.com/dashboard`,
+        `[LOG] Typing 'tahsin@bluetech.solutions' in authentication email input box.`,
+        `[LOG] Clicked authenticate button. Session initiated.`,
+        `[ASSERTION] Locator('#meal-slot-31') isDisabled(); -> SUCCESS (Slot locked after cutoff)`,
+        `[ASSERTION] expect(page.locator('.lock-badge')).toBeVisible(); -> SUCCESS`,
+        `[TEST RUNNER] Capturing state screenshot to lock-verification-stage.png...`,
+        `[STAGE] Playwright spec finished. Elapsed time: 1.25s`
+      ];
+    }
+  };
+
   const executeAutoscript = () => {
     setIsRunningTests(true);
     setTestSuccess(null);
     setRunLogs([]);
+    setStepIndex(0);
 
-    const script = scriptsCatalog[selectedScript as keyof typeof scriptsCatalog];
-    const logBatch = [
-      `[QA ENGINE] Initializing secure Chromium instance for target: ${script.target}...`,
-      `[SYSTEM] Invoking ${script.framework} compilation headers...`,
-      `[TEST RUNNER] Launching spec script: spec.cy.ts`,
-      `[CHROME] Navigating to verified endpoint...`,
-      `[LOG] Element [data-qa="seat-charge"] verified as visible.`,
-      `[LOG] Submitting coupon assertions and validating input elements...`,
-      `[ASSERTION] expect(value).to.be.greaterThan(0); -> SUCCESS (Value: $50.00)`,
-      `[LOG] Simulating human checkout gesture click...`,
-      `[STAGE] API Schema payload confirmed matches server configuration.`,
-      `[TEST RUNNER] Spec finished. Elapsed time: 1.48s`
-    ];
+    const logBatch = getLogBatch(selectedScript);
 
     let currentLog = 0;
     const interval = setInterval(() => {
       if (currentLog < logBatch.length) {
         setRunLogs((prev) => [...prev, logBatch[currentLog]]);
+        setStepIndex(currentLog);
         currentLog++;
       } else {
         clearInterval(interval);
         setIsRunningTests(false);
         setTestSuccess(true);
       }
-    }, 280);
+    }, 450);
   };
 
   // Adjust Load simulated metrics depending on Virtual User volume
@@ -428,6 +449,7 @@ test('Verify subscription calendar locks after cutoff', async ({ page }) => {
                           setSelectedScript(e.target.value);
                           setRunLogs([]);
                           setTestSuccess(null);
+                          setStepIndex(-1);
                         }}
                         className="bg-slate-50 border border-slate-200 text-xs font-mono rounded-lg px-3 py-1.5 text-slate-700 focus:outline-none focus:border-brand-500 cursor-pointer"
                       >
@@ -457,32 +479,224 @@ test('Verify subscription calendar locks after cutoff', async ({ page }) => {
                 </div>
               </div>
 
-              {/* Right Side: Sim Live Terminal Console logs */}
-              <div className="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-6 flex flex-col justify-between min-h-[380px] text-left shadow-xs">
+              {/* Right Side: Sim Live Terminal Console logs and Headless Viewport */}
+              <div className="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-6 flex flex-col justify-between min-h-[460px] text-left shadow-xs">
                 
                 <div className="space-y-4 flex-1">
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-3 font-sans">
-                    <span className="font-mono text-[10px] text-slate-400 uppercase tracking-wider font-bold block">
-                      CLI COMPILE OUTPUT
+                  
+                  {/* Visual Headless Browser Viewport mockup */}
+                  <div>
+                    <span className="font-mono text-[10px] text-slate-400 uppercase tracking-wider font-bold block mb-2">
+                      AUTOMATED CHROMIUM SHELL
                     </span>
-                    <span className="font-mono text-[9px] text-slate-400">STDOUT</span>
-                  </div>
-
-                  <div className="space-y-2 font-mono text-[11px] text-slate-755 max-h-[280px] overflow-y-auto bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    {runLogs.length > 0 ? (
-                      runLogs.map((log, i) => (
-                        <div key={i} className="leading-relaxed">
-                          <span className="text-slate-400 mr-2 opacity-50">#{(i + 1).toString().padStart(2, "0")}</span>
-                          <span className={log.includes("SUCCESS") ? "text-emerald-700 font-bold" : log.includes("Initializing") ? "text-brand-600 font-semibold" : "text-slate-700"}>
-                            {log}
+                    
+                    <div className="bg-slate-950 border border-slate-950 rounded-xl overflow-hidden shadow-md flex flex-col font-sans mb-4">
+                      {/* Browser Window decoration header */}
+                      <div className="flex items-center justify-between bg-slate-900 border-b border-slate-800 px-3 py-2 text-slate-400">
+                        <div className="flex items-center gap-1.5 leading-none">
+                          <span className="h-2 w-2 rounded-full bg-rose-500"></span>
+                          <span className="h-2 w-2 rounded-full bg-amber-500"></span>
+                          <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
+                        </div>
+                        {/* Centered Address bar */}
+                        <div className="flex items-center gap-1.5 bg-slate-950 px-2.5 py-1 rounded-md text-[10px] w-1/2 max-w-[240px] truncate border border-slate-800 text-slate-400 justify-center">
+                          <span className="text-emerald-500 leading-none">🔒</span>
+                          <span className="font-mono leading-none">
+                            {stepIndex === -1 ? "about:blank" : selectedScript === "cypress-bdtickets" ? "bdtickets.com/checkout?id=GP-942" : "lunchbd.com/dashboard"}
                           </span>
                         </div>
-                      ))
-                    ) : (
-                      <div className="text-slate-400 text-center py-20 text-xs">
-                        {"$ idle --waiting-for-spec; compliance outputs ready to fire."}
+                        {/* Emulated system status */}
+                        <span className="font-mono text-[8.5px] text-indigo-400 font-bold bg-indigo-950/80 px-1.5 py-0.5 rounded border border-indigo-900">
+                          {isRunningTests ? "RUNNING" : stepIndex >= 9 ? "PASSED" : "IDLE"}
+                        </span>
                       </div>
-                    )}
+
+                      {/* Browser viewport container canvas */}
+                      <div className="h-[148px] bg-slate-900 p-3.5 relative flex flex-col justify-center items-center text-center overflow-hidden">
+                        
+                        {stepIndex === -1 && (
+                          <div className="space-y-2 text-slate-400">
+                            <div className="h-9 w-9 bg-slate-800/80 rounded-full flex items-center justify-center text-slate-400 border border-slate-700 mx-auto animate-pulse">
+                              <Play className="h-4 w-4 text-indigo-400 fill-indigo-400" />
+                            </div>
+                            <h5 className="text-[11px] font-bold text-slate-200">Chromium Instance Cold</h5>
+                            <p className="text-[9px] text-slate-500 max-w-[180px] leading-relaxed mx-auto">Click "Compile & Execute" to launch test scripts visually inside this runner</p>
+                          </div>
+                        )}
+
+                        {stepIndex >= 0 && (
+                          <div className="w-full h-full flex flex-col relative">
+                            {/* Loading/Compilation State */}
+                            {stepIndex <= 2 && (
+                              <div className="flex-1 flex flex-col items-center justify-center space-y-2">
+                                <RefreshCw className="h-6 w-6 text-indigo-400 animate-spin" />
+                                <h5 className="text-[10px] font-mono font-bold text-slate-300">
+                                  {selectedScript === "cypress-bdtickets" ? "Invoking Cypress compiler..." : "Instantiating Playwright driver..."}
+                                </h5>
+                                <span className="text-[8px] text-slate-500 max-w-[180px] leading-tight font-mono">Loading core bindings & compilation maps</span>
+                              </div>
+                            )}
+
+                            {/* Cypress (bdtickets) Live UI Stepper */}
+                            {selectedScript === "cypress-bdtickets" && stepIndex >= 3 && (
+                              <div className="flex-1 flex flex-col justify-between text-left">
+                                {/* Fake checkout card UI */}
+                                <div className="bg-slate-950 border border-slate-800 p-2.5 rounded-lg flex-1 flex flex-col justify-between relative overflow-hidden">
+                                  
+                                  {/* Overlay for success state */}
+                                  {stepIndex >= 9 && (
+                                    <div className="absolute inset-0 bg-slate-950/95 z-10 flex flex-col items-center justify-center text-center p-2 animate-fade-in">
+                                      <div className="h-7 w-7 bg-emerald-950 border border-emerald-500 rounded-full flex items-center justify-center text-emerald-400 mb-1">
+                                        <CheckCircle className="h-3.5 w-3.5" />
+                                      </div>
+                                      <h6 className="text-[10px] font-black text-white">INTEGRATION COMPLY: PASS</h6>
+                                      <p className="text-[8px] text-slate-400 mt-0.5 font-mono max-w-[175px]">Ticket checkout payment equations validated</p>
+                                    </div>
+                                  )}
+
+                                  <div>
+                                    <div className="flex justify-between items-center border-b border-slate-900 pb-1 mb-1 font-mono">
+                                      <span className="text-[8px] text-indigo-400 uppercase font-bold">bdtickets billing</span>
+                                      <span className="text-[8px] text-slate-500 font-bold">GP-9421</span>
+                                    </div>
+                                    <div className="flex justify-between items-center font-sans">
+                                      <span className="text-[10px] font-semibold text-slate-300">Dhaka → CTG Coach Seat</span>
+                                      <span className={`font-mono text-[10px] transition-all font-bold ${stepIndex >= 7 ? "text-slate-500 line-through" : "text-white"}`}>$500.00</span>
+                                    </div>
+                                    
+                                    {stepIndex >= 6 && (
+                                      <div className="flex justify-between items-center text-[9px] text-emerald-400 font-sans mt-0.5 bg-emerald-950/50 px-1.5 py-0.5 rounded border border-emerald-900/40">
+                                        <span>Coupon Applied:</span>
+                                        <strong className="font-mono text-[9.5px]">- $50.00 (10%)</strong>
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  <div className="pt-1.5 border-t border-slate-900 flex justify-between items-center">
+                                    <span className="text-[9px] font-mono text-slate-400 uppercase font-bold">Grand Total:</span>
+                                    <span className="text-emerald-400 font-bold text-[11px] font-mono">
+                                      {stepIndex >= 7 ? "$450.00" : "$500.00"}
+                                    </span>
+                                  </div>
+
+                                  {/* Highlight box illustrating Cypress focus elements */}
+                                  {stepIndex === 4 && (
+                                    <div className="absolute inset-x-2 bottom-1 border border-emerald-500 bg-emerald-950/40 rounded py-0.5 px-1.5 flex justify-between items-center text-[7.5px] font-mono text-emerald-400 animate-pulse">
+                                      <span>cy.get('[data-qa="seat-charge"]')</span>
+                                      <span className="font-bold">VISIBLE</span>
+                                    </div>
+                                  )}
+                                  {stepIndex === 5 && (
+                                    <div className="absolute inset-x-2 bottom-1 border border-indigo-505 bg-indigo-950/40 rounded py-0.5 px-1.5 flex justify-between items-center text-[7.5px] font-mono text-indigo-300 animate-pulse">
+                                      <span>cy.type('TAHSIN_QA_PRO')</span>
+                                      <span className="animate-ping font-bold">|</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Playwright (lunchbd) Live UI Stepper */}
+                            {selectedScript === "playwright-lunchbd" && stepIndex >= 3 && (
+                              <div className="flex-1 flex flex-col justify-between text-left">
+                                <div className="bg-slate-950 border border-slate-800 p-2.5 rounded-lg flex-1 flex flex-col justify-between relative overflow-hidden">
+                                  
+                                  {/* Flash shutter effect for screenshot simulation */}
+                                  {stepIndex === 8 && (
+                                    <div className="absolute inset-0 bg-white/95 z-20 flex flex-col items-center justify-center text-center animate-pulse pointer-events-none">
+                                      <div className="text-slate-900 font-mono text-[9px] font-black uppercase tracking-widest">📸 SHUTTER CAPTURE</div>
+                                    </div>
+                                  )}
+
+                                  {/* Completed final state */}
+                                  {stepIndex >= 9 && (
+                                    <div className="absolute inset-0 bg-slate-950/95 z-10 flex flex-col items-center justify-center text-center p-2 animate-fade-in">
+                                      <div className="h-7 w-7 bg-indigo-950 border border-indigo-500 rounded-full flex items-center justify-center text-indigo-400 mb-1">
+                                        <CheckCircle className="h-3.5 w-3.5" />
+                                      </div>
+                                      <h6 className="text-[10px] font-black text-white text-indigo-300">PLAYWRIGHT COMPLETED</h6>
+                                      <p className="text-[8px] text-slate-400 mt-0.5 font-mono max-w-[175px]">Screenshot saved: lock-verification-stage.png</p>
+                                    </div>
+                                  )}
+
+                                  {/* State 3-5: Authentication Screen */}
+                                  {stepIndex >= 3 && stepIndex <= 5 && (
+                                    <div className="flex-1 flex flex-col justify-center space-y-1 w-full scale-95 origin-center">
+                                      <label className="text-[8px] text-slate-400 font-semibold block uppercase">Dashboard Login Scope</label>
+                                      <div className="bg-slate-900 border border-slate-800 text-[9.5px] text-slate-300 px-2 py-1 rounded relative font-mono overflow-hidden">
+                                        {stepIndex >= 4 ? "tahsin@bluetech.solutions" : "Enter auth email..."}
+                                        {stepIndex === 4 && <span className="animate-ping font-bold ml-0.5 text-indigo-400">|</span>}
+                                      </div>
+                                      <div className="w-full bg-indigo-600 text-white text-[8.5px] font-bold text-center py-1 rounded font-sans uppercase">
+                                        {stepIndex === 5 ? "Logging in..." : "Confirm access"}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* State 6-8: Calendar lock badge assertions */}
+                                  {stepIndex >= 6 && stepIndex <= 8 && (
+                                    <div className="flex-1 flex flex-col justify-between">
+                                      <div>
+                                        <div className="flex justify-between items-center border-b border-slate-900 pb-1 mb-1 font-mono">
+                                          <span className="text-[8px] text-indigo-400 uppercase font-bold">lunchbd dashboard</span>
+                                          <span className="text-[8px] text-slate-500 font-bold">Dec 31 Session</span>
+                                        </div>
+                                      </div>
+
+                                      <div className="bg-slate-900 border border-slate-800 p-2 rounded flex items-center justify-between mt-1 relative">
+                                        <div className="flex flex-col text-left">
+                                          <span className="text-[9px] font-bold text-slate-400 font-mono leading-none">#meal-slot-31</span>
+                                          <span className="text-[7px] text-rose-500 font-extrabold uppercase mt-0.5 leading-none">DISABLED_COORDINATES</span>
+                                        </div>
+                                        <div className="px-1.5 py-0.5 bg-rose-950 border border-rose-500/50 rounded font-mono text-[7.5px] text-rose-400 font-bold flex items-center gap-0.5">
+                                          <span>🔒</span>
+                                          <span>LOCKED</span>
+                                        </div>
+                                      </div>
+
+                                      {/* Test highlights focus */}
+                                      {stepIndex === 7 && (
+                                        <div className="absolute inset-x-2 bottom-1 border border-emerald-505 bg-emerald-950/40 rounded py-0.5 px-1.5 flex justify-between items-center text-[7.5px] font-mono text-emerald-400 animate-pulse">
+                                          <span>locator('.lock-badge').toBeVisible();</span>
+                                          <span className="font-extrabold">TRUE</span>
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-2 mb-2 font-sans">
+                      <span className="font-mono text-[10px] text-slate-400 uppercase tracking-wider font-bold block">
+                        CLI COMPILE OUTPUT
+                      </span>
+                      <span className="font-mono text-[9px] text-slate-400">STDOUT</span>
+                    </div>
+
+                    <div className="space-y-2 font-mono text-[10.5px] text-slate-755 max-h-[148px] overflow-y-auto bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                      {runLogs.length > 0 ? (
+                        runLogs.map((log, i) => (
+                          <div key={i} className="leading-relaxed">
+                            <span className="text-slate-400 mr-2 opacity-50">#{(i + 1).toString().padStart(2, "0")}</span>
+                            <span className={log.includes("SUCCESS") || log.includes("COMPLETE") ? "text-emerald-700 font-bold" : log.includes("Initializing") || log.includes("Invoking") ? "text-brand-600 font-semibold" : "text-slate-700"}>
+                              {log}
+                            </span>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-slate-400 text-center py-8 text-xs">
+                          {"$ idle --waiting-for-spec; compliance outputs ready to fire."}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -491,9 +705,9 @@ test('Verify subscription calendar locks after cutoff', async ({ page }) => {
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-3.5 mt-4"
+                    className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-3 mt-4"
                   >
-                    <CheckCircle className="h-5 w-5 text-emerald-600 shrink-0" />
+                    <CheckCircle className="h-4.5 w-4.5 text-emerald-600 shrink-0" />
                     <div className="text-left font-sans">
                       <h5 className="font-sans font-bold text-emerald-800 text-xs">Assertions: ALL COMPLY BY SLA</h5>
                       <p className="text-emerald-750 text-[10px] font-mono mt-0.5">Specifications completed with 0 exceptions.</p>

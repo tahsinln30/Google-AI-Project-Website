@@ -48,7 +48,7 @@ export default function PublicationsSection() {
                     <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-brand-600 transition-colors leading-snug">
                       {pub.title}
                     </h3>
-                    <p className="font-sans font-semibold text-xs text-brand-605 mt-1">
+                    <p className="font-sans font-semibold text-xs text-brand-600 mt-1">
                       Published in {pub.journal}
                     </p>
                     <p className="text-slate-500 text-xs sm:text-sm mt-3.5 leading-relaxed font-normal">
@@ -68,7 +68,7 @@ export default function PublicationsSection() {
                     href={pub.url}
                     target="_blank"
                     rel="noopener"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-250 hover:border-brand-500 hover:bg-brand-50 text-xs font-mono font-bold text-brand-700 rounded-lg transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 hover:border-brand-500 hover:bg-brand-50 text-xs font-mono font-bold text-brand-700 rounded-lg transition-colors"
                   >
                     <span>Inspect Archive</span>
                     <ExternalLink className="h-3 w-3" />

@@ -582,10 +582,10 @@ test('Verify subscription calendar locks after cutoff', async ({ page }) => {
                     </span>
                     <span className={`px-2.5 py-0.5 rounded font-mono text-[9px] font-bold ${
                       serverLoadState === "HEALTHY"
-                        ? "bg-emerald-50 border border-emerald-150 text-emerald-800"
+                        ? "bg-emerald-50 border border-emerald-100 text-emerald-800"
                         : serverLoadState === "DEGRADED"
-                        ? "bg-amber-50 border border-amber-150 text-amber-800 animate-pulse"
-                        : "bg-rose-100 border border-rose-200 text-rose-850"
+                        ? "bg-amber-50 border border-amber-100 text-amber-800 animate-pulse"
+                        : "bg-rose-100 border border-rose-200 text-rose-800"
                     }`}>
                       SERVER_{serverLoadState}
                     </span>
@@ -594,31 +594,31 @@ test('Verify subscription calendar locks after cutoff', async ({ page }) => {
                   <div className="space-y-4">
                     {serverLoadState === "HEALTHY" ? (
                       <div className="space-y-3 font-sans">
-                        <div className="h-10 w-10 text-emerald-600 bg-emerald-50 border border-emerald-105 rounded-xl flex items-center justify-center">
+                        <div className="h-10 w-10 text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-xl flex items-center justify-center">
                           <CheckCircle className="h-5 w-5" />
                         </div>
                         <h4 className="text-sm font-bold text-slate-900">System Nominal and Responsive</h4>
-                        <p className="text-slate-505 text-xs leading-relaxed font-normal">
+                        <p className="text-slate-500 text-xs leading-relaxed font-normal">
                           Current throughput handles transactional database operations comfortably, complying with strict SLA response terms (latency &lt; 200ms).
                         </p>
                       </div>
                     ) : serverLoadState === "DEGRADED" ? (
                       <div className="space-y-3 font-sans">
-                        <div className="h-10 w-10 text-amber-600 bg-amber-50 border border-amber-105 rounded-xl flex items-center justify-center animate-pulse">
+                        <div className="h-10 w-10 text-amber-600 bg-amber-50 border border-amber-100 rounded-xl flex items-center justify-center animate-pulse">
                           <ShieldAlert className="h-5 w-5" />
                         </div>
                         <h4 className="text-sm font-bold text-slate-900">Resource degradation warnings flagged</h4>
-                        <p className="text-slate-505 text-xs leading-relaxed font-normal">
+                        <p className="text-slate-500 text-xs leading-relaxed font-normal">
                           Throughput curves reveal API latency rising due to excessive memory allocations and CPU queues. Recommending thread-pool allocation review.
                         </p>
                       </div>
                     ) : (
                       <div className="space-y-3 font-sans">
-                        <div className="h-10 w-10 text-rose-600 bg-rose-50 border border-rose-105 rounded-xl flex items-center justify-center">
+                        <div className="h-10 w-10 text-rose-600 bg-rose-50 border border-rose-100 rounded-xl flex items-center justify-center">
                           <Flame className="h-5 w-5 fill-rose-600 text-rose-600" />
                         </div>
                         <h4 className="text-sm font-bold text-slate-900">Fatal Stress Limits Exceeded</h4>
-                        <p className="text-slate-505 text-xs leading-relaxed font-normal">
+                        <p className="text-slate-500 text-xs leading-relaxed font-normal">
                           K6 reports <strong>{errorRatePercent}% HTTP 500</strong> failures as memory stack allocations overflow. Host throttling activated to prevent broad systemic outage.
                         </p>
                       </div>

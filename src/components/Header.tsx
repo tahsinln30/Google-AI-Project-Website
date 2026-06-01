@@ -7,12 +7,12 @@ const menuItems = [
   { label: "About", id: "about" },
   { label: "Experience", id: "experience" },
   { label: "Education", id: "education" },
-  { label: "Skills & Tools", id: "skills-tools" },
+  { label: "Skills", id: "skills-tools" },
   { label: "Projects", id: "projects" },
   { label: "Publications", id: "publications" },
-  { label: "Honors & Awards", id: "honors-awards" },
-  { label: "Vitals & Analytics", id: "vitals-analytics" },
-  { label: "QA Playground", id: "qa-playground" },
+  { label: "Awards", id: "honors-awards" },
+  { label: "Vitals", id: "vitals-analytics" },
+  { label: "QA Sandbox", id: "qa-playground" },
   { label: "Contact", id: "contact" },
 ];
 
@@ -64,61 +64,67 @@ export default function Header() {
 
   return (
     <>
-      {/* Tiny Informational Announcement Ribbon */}
-      <div className="bg-brand-900 text-brand-50 text-[11px] py-1.5 px-4 font-mono flex items-center justify-center border-b border-brand-800 tracking-tight select-none">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span className="font-semibold opacity-90">LIVE SECURE SYSTEM STATUS:</span>
-          <span className="text-brand-300">COMPLIANCE ACTIVE & SECURITY AUDITED</span>
+      {/* Dynamic colorful ribbon announcement bar */}
+      <div className="bg-slate-950 text-indigo-200 text-[10px] py-1.5 px-4 font-mono flex items-center justify-center border-b border-indigo-950 tracking-wider uppercase select-none relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-indigo-950/20 via-pink-950/25 to-amber-950/20 pointer-events-none"></div>
+        <div className="flex items-center gap-2 relative z-10">
+          <span className="inline-flex h-1.5 w-1.5 rounded-full bg-gradient-to-r from-indigo-400 to-pink-500 animate-pulse"></span>
+          <span className="font-black text-indigo-300">SYSTEM AUDIENCED:</span>
+          <span className="text-slate-400">LIABILITY PASSED • CONTINUOUS WORKFLOW ACTIVE</span>
         </div>
       </div>
 
       <header
-        className={`sticky top-0 z-40 transition-all duration-300 ${
-          scrolled
-            ? "bg-white/95 text-slate-950 backdrop-blur-md shadow-sm border-b border-slate-200/80"
-            : "bg-white text-slate-900 border-b border-slate-100"
-        }`}
+        className={`sticky top-0 z-40 transition-all duration-300 bg-slate-950/85 backdrop-blur-xl border-b border-indigo-950/60`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-18">
-            {/* Corporate Logo / Identity */}
-            <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => scrollToSection("about")}>
-              <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-brand-600 to-brand-800 flex items-center justify-center text-white shadow-md shadow-brand-500/10 border border-brand-500">
-                <ShieldCheck className="h-5.5 w-5.5" />
+        {/* RGB neon flow line running across bottom of header */}
+        <div className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-indigo-500 via-pink-500 to-amber-400 shadow-[0_1px_3px_rgba(99,102,241,0.25)]"></div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="flex items-center justify-between h-16">
+            
+            {/* Corporate Logo with gradient glass design */}
+            <div className="flex items-center gap-3 cursor-pointer group" onClick={() => scrollToSection("about")}>
+              <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-indigo-500 via-purple-650 to-pink-500 flex items-center justify-center text-white shadow-lg border border-indigo-400/50 shrink-0 group-hover:scale-105 transition-transform duration-300">
+                <ShieldCheck className="h-5 w-5 text-white animate-pulse" />
               </div>
-              <div>
-                <span className="font-sans font-extrabold text-base tracking-tight block text-slate-900 leading-none">
+              <div className="hidden sm:block text-left">
+                <span className="font-sans font-black text-[13px] tracking-wider block text-white leading-none">
                   TAHSIN AHMED QA
                 </span>
-                <span className="font-mono text-[9px] tracking-wider text-brand-600 block mt-1 font-bold">
-                  SOFTWARE QUALITY SYSTEMS & ADVISORY
+                <span className="font-mono text-[8px] tracking-widest text-indigo-400 block mt-1 uppercase font-bold">
+                  SOFTWARE QUALITY SYSTEMS ADVISORY
+                </span>
+              </div>
+              <div className="sm:hidden text-left">
+                <span className="font-sans font-black text-xs tracking-wider block text-white">
+                  TAHSIN AHMED QA
                 </span>
               </div>
             </div>
 
             {/* Desktop Navigation Link Array */}
-            <nav className="hidden lg:flex items-center gap-1">
+            <nav className="hidden xl:flex items-center gap-1">
               {menuItems.map((item, index) => (
                 <button
                   key={item.id}
                   id={`nav-btn-${item.id}`}
                   onClick={() => scrollToSection(item.id)}
-                  className={`px-3 py-1.5 rounded-md text-[11px] font-semibold tracking-tight transition-all relative ${
+                  className={`px-2.5 py-1.5 rounded-md text-[11px] font-black tracking-normal uppercase transition-all relative cursor-pointer ${
                     activeSection === item.id
-                      ? "text-brand-700"
-                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                      ? "text-indigo-200"
+                      : "text-slate-405 hover:text-white hover:bg-slate-900/60"
                   }`}
                 >
-                  <span className="relative z-10">
-                    <span className="text-brand-500 font-mono font-medium mr-1">{(index + 1).toString().padStart(2, "0")}</span>
+                  <span className="relative z-10 flex items-center gap-1 font-sans">
+                    <span className="text-[9px] font-mono font-black text-indigo-400">{(index + 1).toString().padStart(2, "0")}</span>
                     {item.label}
                   </span>
                   {activeSection === item.id && (
                     <motion.span
                       layoutId="activeNavBackground"
-                      className="absolute inset-0 bg-brand-50 border border-brand-200/60 rounded-md"
-                      transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                      className="absolute inset-0 bg-indigo-950/80 border border-indigo-500/35 rounded-md"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
                   )}
                 </button>
@@ -126,37 +132,14 @@ export default function Header() {
             </nav>
 
             {/* External Links / Social Actions */}
-            <div className="hidden xl:flex items-center gap-3 pl-4 border-l border-slate-200">
+            <div className="hidden xl:flex items-center gap-2 pl-3 border-l border-indigo-950">
               <a
                 href={ABOUT_ME.contact.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
                 referrerPolicy="no-referrer"
-                className="text-slate-500 hover:text-brand-600 transition-colors p-1.5 rounded-md hover:bg-slate-50"
+                className="text-slate-450 hover:text-indigo-400 transition-colors p-1.5 rounded-md hover:bg-slate-900"
                 title="LinkedIn Profile"
-              >
-                <Linkedin className="h-4 w-4" />
-              </a>
-              <a
-                href={ABOUT_ME.contact.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                referrerPolicy="no-referrer"
-                className="text-slate-500 hover:text-slate-900 transition-colors p-1.5 rounded-md hover:bg-slate-50"
-                title="GitHub Repositories"
-              >
-                <Github className="h-4 w-4" />
-              </a>
-            </div>
-
-            {/* Mobile Controls */}
-            <div className="flex lg:hidden items-center gap-3">
-              <a
-                href={ABOUT_ME.contact.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                referrerPolicy="no-referrer"
-                className="text-slate-600 hover:text-brand-600 p-1.5"
               >
                 <Linkedin className="h-4.5 w-4.5" />
               </a>
@@ -165,15 +148,38 @@ export default function Header() {
                 target="_blank"
                 rel="noopener noreferrer"
                 referrerPolicy="no-referrer"
-                className="text-slate-600 hover:text-slate-900 p-1.5"
+                className="text-slate-450 hover:text-white transition-colors p-1.5 rounded-md hover:bg-slate-900"
+                title="GitHub Repositories"
               >
                 <Github className="h-4.5 w-4.5" />
               </a>
+            </div>
+
+            {/* Mobile / Compact Tabletop controls */}
+            <div className="flex xl:hidden items-center gap-2">
+              <a
+                href={ABOUT_ME.contact.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                referrerPolicy="no-referrer"
+                className="text-slate-400 hover:text-indigo-400 p-1.5 rounded-md hover:bg-slate-900"
+              >
+                <Linkedin className="h-4 w-4" />
+              </a>
+              <a
+                href={ABOUT_ME.contact.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                referrerPolicy="no-referrer"
+                className="text-slate-400 hover:text-white p-1.5 rounded-md hover:bg-slate-900"
+              >
+                <Github className="h-4 w-4" />
+              </a>
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-slate-600 hover:text-slate-900 p-1.5 hover:bg-slate-100 rounded-md"
+                className="text-slate-400 hover:text-white p-1.5 hover:bg-slate-900 rounded-md transition-colors"
               >
-                {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>
             </div>
           </div>
@@ -186,24 +192,24 @@ export default function Header() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.25 }}
-              className="lg:hidden border-t border-slate-200 bg-white overflow-hidden shadow-inner"
+              transition={{ duration: 0.2 }}
+              className="xl:hidden border-t border-indigo-950/65 bg-slate-950/95 backdrop-blur-xl overflow-hidden shadow-2xl"
             >
-              <div className="px-4 py-4 space-y-1.5 max-h-[80vh] overflow-y-auto">
-                <div className="text-[10px] font-mono text-slate-400 uppercase tracking-widest px-3 mb-2">
+              <div className="px-4 py-4 space-y-1 max-h-[80vh] overflow-y-auto">
+                <div className="text-[9px] font-mono text-indigo-400 uppercase tracking-widest px-3 mb-2 font-black">
                   System Navigation Grid
                 </div>
                 {menuItems.map((item, index) => (
                   <button
                     key={item.id}
                     onClick={() => scrollToSection(item.id)}
-                    className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-semibold flex items-center transition-all ${
+                    className={`w-full text-left px-3 py-2 rounded-lg text-xs font-black uppercase flex items-center transition-all cursor-pointer ${
                       activeSection === item.id
-                        ? "bg-brand-50 text-brand-700 border-l-4 border-brand-600 font-bold"
-                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"
-                     }`}
+                        ? "bg-indigo-950 text-indigo-300 border-l-4 border-indigo-505 font-bold"
+                        : "text-slate-400 hover:bg-slate-900 hover:text-white"
+                    }`}
                   >
-                    <span className="font-mono text-[11px] text-brand-500 mr-2 w-5">
+                    <span className="font-mono text-[10px] text-indigo-405 mr-2 w-5 font-bold">
                       {(index + 1).toString().padStart(2, "0")}
                     </span>
                     {item.label}

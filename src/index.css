@@ -1,20 +1,20 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
-  --color-brand-50: #eff6ff;
-  --color-brand-100: #dbeafe;
-  --color-brand-200: #bfdbfe;
-  --color-brand-300: #93c5fd;
-  --color-brand-400: #60a5fa;
-  --color-brand-500: #3b82f6;
-  --color-brand-600: #2563eb;
-  --color-brand-700: #1d4ed8;
-  --color-brand-800: #1e40af;
-  --color-brand-900: #1e3a8a;
-  --color-brand-950: #172554;
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-200: #c7d2fe;
+  --color-brand-300: #a5b4fc;
+  --color-brand-400: #818cf8;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-brand-700: #4338ca;
+  --color-brand-800: #3730a3;
+  --color-brand-900: #312e81;
+  --color-brand-950: #1e1b4b;
 }
 
 html {
@@ -23,12 +23,63 @@ html {
 
 body {
   font-family: var(--font-sans);
+  background-color: #fafaff;
 }
 
-/* Custom continuous scanline effect or tech grid rules for SQA feel */
+/* Custom continuous scanline effect or tech grid rules for SQA feel with layered primary gradients */
 .qa-grid {
   background-image: 
-    linear-gradient(to right, rgba(37, 99, 235, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(37, 99, 235, 0.04) 1px, transparent 1px);
-  background-size: 24px 24px;
+    linear-gradient(to right, rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
 }
+
+/* Stunning energetic mesh gradient panels */
+.mesh-gradient-pink {
+  background: radial-gradient(circle at 10% 20%, rgba(244, 63, 94, 0.12) 0%, transparent 50%),
+              radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.12) 0%, transparent 50%);
+}
+
+.mesh-gradient-violet {
+  background: radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 60%),
+              radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.15) 0%, transparent 60%);
+}
+
+.mesh-gradient-emerald {
+  background: radial-gradient(circle at 30% 10%, rgba(16, 185, 129, 0.12) 0%, transparent 50%),
+              radial-gradient(circle at 70% 90%, rgba(245, 158, 11, 0.12) 0%, transparent 50%);
+}
+
+.mesh-gradient-amber {
+  background: radial-gradient(circle at 90% 10%, rgba(245, 158, 11, 0.15) 0%, transparent 50%),
+              radial-gradient(circle at 10% 90%, rgba(236, 72, 153, 0.15) 0%, transparent 50%);
+}
+
+/* Continuous color pulsing keyframe animations */
+@keyframes colorfulPulse {
+  0%, 100% {
+    transform: scale(1) translate(0px, 0px);
+    opacity: 0.6;
+  }
+  33% {
+    transform: scale(1.15) translate(30px, -20px);
+    opacity: 0.8;
+  }
+  66% {
+    transform: scale(0.9) translate(-20px, 20px);
+    opacity: 0.5;
+  }
+}
+
+.animate-glow-pink {
+  animation: colorfulPulse 12s infinite ease-in-out;
+}
+
+.animate-glow-indigo {
+  animation: colorfulPulse 16s infinite ease-in-out -4s;
+}
+
+.animate-glow-amber {
+  animation: colorfulPulse 14s infinite ease-in-out -8s;
+}
+

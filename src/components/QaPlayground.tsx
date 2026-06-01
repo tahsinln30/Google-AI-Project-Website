@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Bug, Play, Terminal, Zap, ShieldAlert, Cpu, RefreshCw, Layers, CheckCircle, Flame, ArrowRight, Clipboard } from "lucide-react";
 
@@ -17,6 +17,17 @@ export default function QaPlayground() {
   const [isRunningTests, setIsRunningTests] = useState(false);
   const [testSuccess, setTestSuccess] = useState<boolean | null>(null);
   const [stepIndex, setStepIndex] = useState<number>(-1);
+
+  const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Clean up compile assertion simulator interval on unmount
+  useEffect(() => {
+    return () => {
+      if (intervalIdRef.current) {
+        clearInterval(intervalIdRef.current);
+      }
+    };
+  }, []);
 
   // State for Load Testing Sim
   const [virtualUsers, setVirtualUsers] = useState<number>(500);
@@ -144,6 +155,9 @@ test('Verify subscription calendar locks after cutoff', async ({ page }) => {
   };
 
   const executeAutoscript = () => {
+    if (intervalIdRef.current) {
+      clearInterval(intervalIdRef.current);
+    }
     setIsRunningTests(true);
     setTestSuccess(null);
     setRunLogs([]);
@@ -154,15 +168,21 @@ test('Verify subscription calendar locks after cutoff', async ({ page }) => {
     let currentLog = 0;
     const interval = setInterval(() => {
       if (currentLog < logBatch.length) {
-        setRunLogs((prev) => [...prev, logBatch[currentLog]]);
+        const nextItem = logBatch[currentLog];
+        if (nextItem) {
+          setRunLogs((prev) => [...prev, nextItem]);
+        }
         setStepIndex(currentLog);
         currentLog++;
       } else {
-        clearInterval(interval);
+        if (intervalIdRef.current) {
+          clearInterval(intervalIdRef.current);
+        }
         setIsRunningTests(false);
         setTestSuccess(true);
       }
     }, 450);
+    intervalIdRef.current = interval;
   };
 
   // Adjust Load simulated metrics depending on Virtual User volume
@@ -446,6 +466,11 @@ test('Verify subscription calendar locks after cutoff', async ({ page }) => {
                       <select
                         value={selectedScript}
                         onChange={(e) => {
+                          if (intervalIdRef.current) {
+                            clearInterval(intervalIdRef.current);
+                            intervalIdRef.current = null;
+                          }
+                          setIsRunningTests(false);
                           setSelectedScript(e.target.value);
                           setRunLogs([]);
                           setTestSuccess(null);
@@ -686,7 +711,7 @@ test('Verify subscription calendar locks after cutoff', async ({ page }) => {
                         runLogs.map((log, i) => (
                           <div key={i} className="leading-relaxed">
                             <span className="text-slate-400 mr-2 opacity-50">#{(i + 1).toString().padStart(2, "0")}</span>
-                            <span className={log.includes("SUCCESS") || log.includes("COMPLETE") ? "text-emerald-700 font-bold" : log.includes("Initializing") || log.includes("Invoking") ? "text-brand-600 font-semibold" : "text-slate-700"}>
+                            <span className={log && (log.includes("SUCCESS") || log.includes("COMPLETE")) ? "text-emerald-700 font-bold" : log && (log.includes("Initializing") || log.includes("Invoking")) ? "text-brand-600 font-semibold" : "text-slate-700"}>
                               {log}
                             </span>
                           </div>

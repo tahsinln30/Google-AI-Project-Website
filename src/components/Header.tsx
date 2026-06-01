@@ -65,27 +65,38 @@ export default function Header() {
   }, []);
 
   const scrollToSection = (id: string) => {
+    const wasMenuOpen = mobileMenuOpen;
     setMobileMenuOpen(false);
     
     isManualScroll.current = true;
     if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
     setActiveSection(id);
 
-    const element = document.getElementById(id);
-    if (element) {
-      const offset = 80; // height of floating header
-      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-      const offsetPosition = elementPosition - offset;
+    const performScroll = () => {
+      const element = document.getElementById(id);
+      if (element) {
+        const offset = 80; // height of floating header
+        const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+        const offsetPosition = elementPosition - offset;
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth",
+        });
+      }
+    };
+
+    if (wasMenuOpen) {
+      // Delay scrolling slightly until the mobile menu collapse has completed and layout has shifted back
+      setTimeout(performScroll, 220);
+    } else {
+      performScroll();
     }
 
+    if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
     scrollTimeout.current = setTimeout(() => {
       isManualScroll.current = false;
-    }, 850);
+    }, wasMenuOpen ? 1100 : 850);
   };
 
   return (

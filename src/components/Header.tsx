@@ -26,17 +26,29 @@ export default function Header() {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
 
-      // Find which section is currently mostly within view
-      const scrollPosition = window.scrollY + 160;
+      // Check if near the very bottom of the page
+      const isAtBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 60;
+      if (isAtBottom) {
+        setActiveSection("contact");
+        return;
+      }
+
+      const headerOffset = 120; // 80px header + 40px threshold buffer
+      let currentSection = "";
+
       for (const item of menuItems) {
         const element = document.getElementById(item.id);
         if (element) {
-          const top = element.offsetTop;
-          const height = element.offsetHeight;
-          if (scrollPosition >= top && scrollPosition < top + height) {
-            setActiveSection(item.id);
+          const rect = element.getBoundingClientRect();
+          if (rect.top <= headerOffset && rect.bottom > headerOffset) {
+            currentSection = item.id;
+            break;
           }
         }
+      }
+
+      if (currentSection) {
+        setActiveSection(currentSection);
       }
     };
 
@@ -113,7 +125,7 @@ export default function Header() {
                   className={`px-2.5 py-1.5 rounded-md text-[11px] font-black tracking-normal uppercase transition-all relative cursor-pointer ${
                     activeSection === item.id
                       ? "text-indigo-200"
-                      : "text-slate-405 hover:text-white hover:bg-slate-900/60"
+                      : "text-slate-400 hover:text-white hover:bg-slate-900/60"
                   }`}
                 >
                   <span className="relative z-10 flex items-center gap-1 font-sans">
@@ -138,7 +150,7 @@ export default function Header() {
                 target="_blank"
                 rel="noopener noreferrer"
                 referrerPolicy="no-referrer"
-                className="text-slate-450 hover:text-indigo-400 transition-colors p-1.5 rounded-md hover:bg-slate-900"
+                className="text-slate-400 hover:text-indigo-400 transition-colors p-1.5 rounded-md hover:bg-slate-900"
                 title="LinkedIn Profile"
               >
                 <Linkedin className="h-4.5 w-4.5" />
@@ -148,7 +160,7 @@ export default function Header() {
                 target="_blank"
                 rel="noopener noreferrer"
                 referrerPolicy="no-referrer"
-                className="text-slate-450 hover:text-white transition-colors p-1.5 rounded-md hover:bg-slate-900"
+                className="text-slate-400 hover:text-white transition-colors p-1.5 rounded-md hover:bg-slate-900"
                 title="GitHub Repositories"
               >
                 <Github className="h-4.5 w-4.5" />
@@ -205,11 +217,11 @@ export default function Header() {
                     onClick={() => scrollToSection(item.id)}
                     className={`w-full text-left px-3 py-2 rounded-lg text-xs font-black uppercase flex items-center transition-all cursor-pointer ${
                       activeSection === item.id
-                        ? "bg-indigo-950 text-indigo-300 border-l-4 border-indigo-505 font-bold"
+                        ? "bg-indigo-950 text-indigo-300 border-l-4 border-indigo-500 font-bold"
                         : "text-slate-400 hover:bg-slate-900 hover:text-white"
                     }`}
                   >
-                    <span className="font-mono text-[10px] text-indigo-405 mr-2 w-5 font-bold">
+                    <span className="font-mono text-[10px] text-indigo-400 mr-2 w-5 font-bold">
                       {(index + 1).toString().padStart(2, "0")}
                     </span>
                     {item.label}
